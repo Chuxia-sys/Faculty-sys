@@ -1,15 +1,13 @@
-import { useState } from 'react'
-import './App.css'
+import { Routes, Route } from "react-router-dom";
 
-function App() {
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+
+export default function App() {
   return (
-    <div className="h-screen flex items-center justify-center bg-black">
-      <h1 className="text-4xl font-bold text-white">
-        Tailwind is working!
-      </h1>
-    </div>
-  )
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+    </Routes>
+  );
 }
-
-
-export default App
