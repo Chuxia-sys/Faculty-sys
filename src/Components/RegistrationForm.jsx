@@ -1,8 +1,42 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import axios from "axios";
 
 export default function RegisterForm() {
     const [showPassword, setShowPassword] = useState(false);
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const handleRegister = async (e) => {
+      e.preventDefault();
+      setLoading(true);
+      setError("");
+
+      try {
+        const response = await axios.post(
+          "http://localhost:5000/register",
+          {
+            name,
+            email,
+            password
+          }
+        );
+
+        console.log(response.data);
+        // Optionally redirect or clear form on success
+        setName("");
+        setEmail("");
+        setPassword("");
+      } catch (err) {
+        setError(err.response?.data?.message || "Registration failed. Please try again.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   return (
     <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
@@ -11,7 +45,13 @@ export default function RegisterForm() {
         Register
       </h1>
 
-      <form className="space-y-4">
+      {error && (
+        <div className="bg-red-100 text-red-700 p-3 rounded-lg mb-4">
+          {error}
+        </div>
+      )}
+
+      <form className="space-y-4" onSubmit={handleRegister}>
 
         <div>
           <label className="block mb-1 font-medium">
@@ -22,6 +62,9 @@ export default function RegisterForm() {
             type="text"
             placeholder="Enter full name"
             className="w-full border border-gray-300 rounded-lg px-4 py-2"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
           />
         </div>
 
@@ -34,6 +77,9 @@ export default function RegisterForm() {
             type="email"
             placeholder="Enter email"
             className="w-full border border-gray-300 rounded-lg px-4 py-2"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
           />
         </div>
 
@@ -48,6 +94,9 @@ export default function RegisterForm() {
               type={showPassword ? "text" : "password"}
               placeholder="Enter password"
               className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-16"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
 
             <button
@@ -63,9 +112,10 @@ export default function RegisterForm() {
 
         <button
           type="submit"
-          className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
+          className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 disabled:bg-gray-400"
+          disabled={loading}
         >
-          Register
+          {loading ? "Registering..." : "Register"}
         </button>
 
       </form>
